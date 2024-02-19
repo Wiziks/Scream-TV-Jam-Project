@@ -49,7 +49,7 @@ public class Graph : MonoBehaviour {
         List<Node> _nodes = new List<Node>();
 
         foreach (Edge edge in _edges) {
-            if (edge.BeginNode.IsStartNode)
+            if (edge.BeginNode.IsStart)
                 _nodes.Add(edge.BeginNode);
         }
 
