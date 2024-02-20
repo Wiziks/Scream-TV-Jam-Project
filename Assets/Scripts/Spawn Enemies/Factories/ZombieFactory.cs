@@ -26,13 +26,37 @@ public class ZombieFactory : MonoBehaviour, IMonsterFactory {
         _zombiePoolIndex = 0;
     }
 
-    public Zombie[] ZombieCollisionIntersection(Vector3 center, float radius) {
+    public Zombie[] ZombieCollisionIntersection(Vector2 startPoint, Vector2 endPoint) {
         List<Zombie> zombies = new List<Zombie>();
         foreach (Zombie zombie in _zombies) {
-            if (Vector3.Distance(zombie.transform.position, center) <= radius + zombie.ColliderRadius) {
+            if (zombie.ZombieState == Zombie.State.Attack &&
+                LineIntersectsCircle(startPoint, endPoint, zombie.transform.position, zombie.ColliderRadius)) {
                 zombies.Add(zombie);
             }
         }
         return zombies.ToArray();
+    }
+
+    public void DisactiveZombie() {
+        foreach (Zombie zombie in _zombies) {
+            zombie.gameObject.SetActive(false);
+        }
+    }
+
+    private bool LineIntersectsCircle(Vector2 startPoint, Vector2 endPoint, Vector2 center, float radius) {
+        Vector2 lineDir = endPoint - startPoint;
+        Vector2 toCenter = center - startPoint;
+        float t = Vector2.Dot(toCenter, lineDir.normalized);
+
+        Vector2 closestPoint;
+        if (t <= 0.0f) {
+            closestPoint = startPoint;
+        } else if (t >= lineDir.magnitude) {
+            closestPoint = endPoint;
+        } else {
+            closestPoint = startPoint + lineDir.normalized * t;
+        }
+
+        return (closestPoint - center).magnitude <= radius;
     }
 }

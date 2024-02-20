@@ -5,10 +5,6 @@ public class CameraMoving : MonoBehaviour {
     [SerializeField] private float _sensitivity;
     [SerializeField][Range(0f, 90f)] private float _maxLookXAngle;
 
-    [Header("Look At Settings")]
-    [SerializeField] private Transform _lookAtTarget;
-    [SerializeField] private float _lookAtSmoothFactor;
-
     private Transform _cameraTransform;
     private float xRotation = 0f;
 

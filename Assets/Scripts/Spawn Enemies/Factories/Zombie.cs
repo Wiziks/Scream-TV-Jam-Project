@@ -29,7 +29,9 @@ public class Zombie : MonoBehaviour, IMonster {
     [Header("Dead Animation")]
     [SerializeField] private ParticleSystem _deathParticleSystem;
     [SerializeField] private SkinnedMeshRenderer _skinnedMeshRenderer;
+    [SerializeField] private AudioSource _audioSource;
 
+    public State ZombieState => _state;
     private State _state;
     public void Spawn(Edge startEdge) {
         gameObject.SetActive(true);
@@ -96,7 +98,7 @@ public class Zombie : MonoBehaviour, IMonster {
 
         transform.LookAt(target);
 
-        while (transform.position != target || _state != State.Attack) {
+        while (transform.position != target && _state == State.Attack) {
             transform.position = Vector3.MoveTowards(
                 transform.position, target, _attackSpeed * Time.deltaTime);
 
@@ -114,6 +116,7 @@ public class Zombie : MonoBehaviour, IMonster {
         SetState(State.Dead);
         _deathParticleSystem.Play();
         _skinnedMeshRenderer.enabled = false;
+        _audioSource.Play();
         Invoke(nameof(SetActiveFalse), _deathParticleSystem.main.duration);
     }
 
@@ -123,6 +126,7 @@ public class Zombie : MonoBehaviour, IMonster {
     }
 
     private void SetState(State newState) {
+        print(newState);
         _state = newState;
         _stateChanging.Raise(newState);
     }

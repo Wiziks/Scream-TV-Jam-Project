@@ -33,10 +33,20 @@ public class TutorialManager : MonoBehaviour {
     [Header("Spawner")]
     [SerializeField] private Spawner _spawner;
 
+    [Header("Settings")]
+    [SerializeField] private bool _needTutorial;
+
     private int _nextTextIndex;
     private bool _isWaitingForMove;
 
     private void Start() {
+        if (_needTutorial == false) {
+            _spawner.StartSpawn();
+            _flashlight.SetActive(true);
+            Invoke(nameof(DestroyAll), 5f);
+            return;
+        }
+
         _playerMoving.CanMoving = false;
         _nextTextIndex = 0;
         _camera = Camera.main;
