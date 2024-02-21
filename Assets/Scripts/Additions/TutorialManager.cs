@@ -33,16 +33,20 @@ public class TutorialManager : MonoBehaviour {
     [Header("Spawner")]
     [SerializeField] private Spawner _spawner;
 
-    [Header("Settings")]
-    [SerializeField] private bool _needTutorial;
+    private bool _needTutorial;
 
     private int _nextTextIndex;
     private bool _isWaitingForMove;
 
+    private const string SAVE_KEY = "Need Toturial";
+
     private void Start() {
+        _needTutorial = PlayerPrefs.GetInt(SAVE_KEY, 1) == 1 ? true : false;
+
         if (_needTutorial == false) {
             _spawner.StartSpawn();
             _flashlight.SetActive(true);
+            _playerMoving.CanMoving = true;
             Invoke(nameof(DestroyAll), 5f);
             return;
         }
@@ -81,6 +85,9 @@ public class TutorialManager : MonoBehaviour {
         Invoke(nameof(DestroyAll), 5f);
 
         _isWaitingForMove = false;
+
+        PlayerPrefs.SetInt(SAVE_KEY, 0);
+        PlayerPrefs.Save();
     }
 
     private void DestroyAll() {
@@ -137,5 +144,10 @@ public class TutorialManager : MonoBehaviour {
         }
 
         onEndAction?.Invoke();
+    }
+
+    [ContextMenu("DeleteSave")]
+    public void DeleteSave() {
+        PlayerPrefs.DeleteAll();
     }
 }

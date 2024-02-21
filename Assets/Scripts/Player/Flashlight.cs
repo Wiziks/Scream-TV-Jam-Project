@@ -24,6 +24,11 @@ public class Flashlight : MonoBehaviour {
 
     private float _timer;
 
+    private void Start() {
+        _material.EnableKeyword("_EMISSION");
+        _material.SetColor("_EmissionColor", new Color(0.75f, 0.75f, 0.75f) * 0f);
+    }
+
     private void Update() {
         if (Input.GetMouseButtonDown(0) && _timer >= _lightCooldown) {
             TurnOn();
@@ -41,13 +46,8 @@ public class Flashlight : MonoBehaviour {
         Vector3 start = transform.parent.position + transform.parent.forward * _lightRadius;
         start.y = 0f;
 
-        Debug.DrawLine(start, end, Color.red, 5f);
+        // Debug.DrawLine(start, end, Color.red, 5f);
         // print(start + " " + end);
-
-        Zombie[] zombies = _zombieFactory.ZombieCollisionIntersection(start, end);
-        foreach (Zombie zombie in zombies) {
-            zombie.KillZombie();
-        }
 
         _light.enabled = true;
 
@@ -55,16 +55,22 @@ public class Flashlight : MonoBehaviour {
 
         _audioSource.Play();
 
-        StartCoroutine(TurnOff());
+        StartCoroutine(TurnOff(start, end));
     }
 
-    private IEnumerator TurnOff() {
+    private IEnumerator TurnOff(Vector3 start, Vector3 end) {
         float maxIntensity = _light.intensity;
 
         for (float t = 0f; t < 1f; t += Time.deltaTime / _turnOffDuration) {
             _light.intensity = Mathf.Lerp(0f, maxIntensity, _turnOffAnimation.Evaluate(t));
             _material.EnableKeyword("_EMISSION");
             _material.SetColor("_EmissionColor", new Color(0.75f, 0.75f, 0.75f) * Mathf.Lerp(0f, 2, _turnOffAnimation.Evaluate(t)));
+
+            Zombie[] zombies = _zombieFactory.ZombieCollisionIntersection(start, end);
+            foreach (Zombie zombie in zombies) {
+                zombie.KillZombie();
+            }
+
             yield return null;
         }
 

@@ -35,7 +35,7 @@ public class PlayerMoving : MonoBehaviour {
 
     private void Awake() {
         _playerPosition.SetPlayerPosition(transform);
-        _canMoving = true;
+        _canMoving = false;
         _sprintState = SprintState.Ready;
 
         _lastPosition = transform.position;
