@@ -27,7 +27,7 @@ public class Zombie : MonoBehaviour, IMonster {
     [SerializeField] private float _rotateTime;
 
     [Header("Dead Animation")]
-    [SerializeField] private ParticleSystem _deathParticleSystem;
+    [SerializeField] private ParticleSystem[] _deathParticleSystems;
     [SerializeField] private SkinnedMeshRenderer _skinnedMeshRenderer;
     [SerializeField] private AudioSource _audioSource;
 
@@ -114,10 +114,16 @@ public class Zombie : MonoBehaviour, IMonster {
 
     public void KillZombie() {
         SetState(State.Dead);
-        _deathParticleSystem.Play();
+
+        float maxDuration = 0f;
+        foreach (ParticleSystem system in _deathParticleSystems) {
+            system.Play();
+            if (system.main.duration > maxDuration)
+                maxDuration = system.main.duration;
+        }
         _skinnedMeshRenderer.enabled = false;
         _audioSource.Play();
-        Invoke(nameof(SetActiveFalse), _deathParticleSystem.main.duration);
+        Invoke(nameof(SetActiveFalse), maxDuration);
     }
 
     private void SetActiveFalse() {
